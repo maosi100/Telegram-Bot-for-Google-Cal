@@ -1,0 +1,68 @@
+Testbot:
+    - name:         @sysctl_test
+    - username:     @systctl_test_bot
+    - API-Token:    5624466264:AAFHag62GgdYBr0aYn_uVQP6VxRfMEH37AI
+
+
+Planned functionalities for V1.0:
+    - Telegram Bot that is connected to a google calender
+    - 'Always on', triggered upon command
+    - Command to display all the bot commands
+        - Maybe use different inputs (s. )
+    - Setting different Event categories
+    - Adding Events to the Calender
+    - Deleting Events in the Calender
+    - Listing all Events in the Calender
+    - Authentification via environment variable
+
+Planned functionanlities for V2.0:
+    - Modifying events
+    - Using event names of more than 1 word
+    - Deleting events using a more convenient event id
+
+Planned functionalities for future releases:
+    - Automatic reminders
+    - Email integration to receive emails to contact@systemctl.global
+
+Commands:
+    - Commands: Lists all commands
+    - Events: Lists all Events
+        - Argument can be given to define which Events ("podcast, ...")
+    - Add: Adds Event to Calender
+    - Update: Updates an Event
+    - Remove: Removes Event to Calender
+
+List Events:
+    Input:
+    - !events <type>
+        - type: CTLCAST, RAVE, MISC
+            - If type = None: All types
+
+    Output:
+    name, #ID
+    type
+    date
+
+Add Events:
+    Input:
+    - !add <name> <type> <date>
+        - Name: Freitext
+        - Type: CTLCAST, RAVE, MISC
+            - If type = none: MISC
+        - Date: Datum DD.MM.YYYY
+
+    Output:
+    I added the following Event
+    name. #ID
+    type
+    date
+
+Remove Events:
+    Input:
+    - !remove <id>
+
+    Output:
+    You sure you want to remove <id> <name>, <type> on <date> (y/n)?
+
+    y: <id> <name>, <type> on <date> was removed.
+    n: <id> <name>, <type> on <date> was not removed.

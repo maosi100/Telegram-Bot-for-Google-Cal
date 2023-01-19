@@ -1,0 +1,4 @@
+__pycache__
+utilities
+*.pickle
+*.code-workspace
