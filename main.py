@@ -24,21 +24,19 @@ with open ('./event_categories.txt') as file:
         event_types.append(line_new)
 
  
-# event_types = ['rave', 'ctlcast', 'misc']
-
-command_event = telebot.formatting.hbold('!events <type>\n') + 'Lists all events from now on (type optional)'
-command_add = telebot.formatting.hbold('!add <name>; <type>; <yyyy-mm-dd>\n') + 'Adds new event of particular type'
-command_remove = telebot.formatting.hbold('!remove <eventID>\n') + 'Removes event of particular ID'
-
 """ TELEGRAM BOT FUNCTIONALITIES """
 
-""" !commands: Lists all the Commands available to the bot and their usage """
-# Should be further specificable by adding the command as argument and only get this usage
-
+""" !help: Lists all the Commands available to the bot and their usage """
 @bot.message_handler(regexp="!help")
 def commands(message):
 
-    commands = 'Here are my commands:\n\n' + command_event + '\n\n' + command_add + '\n\n' + command_remove
+    command_text = "Here are my commands:"
+    command_event = telebot.formatting.hbold('!events <type>\n') + 'Lists all events from now on (type optional)'
+    command_add = telebot.formatting.hbold('!add <name>; <type>; <yyyy-mm-dd>\n') + 'Adds new event of particular type'
+    command_remove = telebot.formatting.hbold('!remove <eventID>\n') + 'Removes event of particular ID'
+
+    commands = "\n\n".join(command_text, command_event, command_add, command_remove)
+    # commands = 'Here are my commands:\n\n' + command_event + '\n\n' + command_add + '\n\n' + command_remove
 
     bot.send_message(message.chat.id, commands, parse_mode='html')
     bot.send_message(message.chat.id, telebot.formatting.hbold('Current event types:\n') + '\n'.join(event_types), parse_mode='html')
