@@ -30,12 +30,20 @@ with open ('./event_categories.txt') as file:
 @bot.message_handler(regexp="!help")
 def commands(message):
 
-    command_text = "Here are my commands:"
-    command_event = telebot.formatting.hbold('!events <type>\n') + 'Lists all events from now on (type optional)'
-    command_add = telebot.formatting.hbold('!add <name>; <type>; <yyyy-mm-dd>\n') + 'Adds new event of particular type'
-    command_remove = telebot.formatting.hbold('!remove <eventID>\n') + 'Removes event of particular ID'
+    command_list = []
+    
+    command_list.append("Here are my commands:")
+    command_list.append(telebot.formatting.hbold('!events <type>\n') + 'Lists all events from now on (type optional)')
+    command_list.append(telebot.formatting.hbold('!add <name>; <type>; <yyyy-mm-dd>\n') + 'Adds new event of particular type')
+    command_list.append(telebot.formatting.hbold('!remove <eventID>\n') + 'Removes event of particular ID')
 
-    commands = "\n\n".join(command_text, command_event, command_add, command_remove)
+
+    # command_text = "Here are my commands:"
+    # command_event = telebot.formatting.hbold('!events <type>\n') + 'Lists all events from now on (type optional)'
+    # command_add = telebot.formatting.hbold('!add <name>; <type>; <yyyy-mm-dd>\n') + 'Adds new event of particular type'
+    # command_remove = telebot.formatting.hbold('!remove <eventID>\n') + 'Removes event of particular ID'
+
+    commands = "\n\n".join(command_list)
     # commands = 'Here are my commands:\n\n' + command_event + '\n\n' + command_add + '\n\n' + command_remove
 
     bot.send_message(message.chat.id, commands, parse_mode='html')
