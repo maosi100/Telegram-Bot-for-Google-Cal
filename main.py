@@ -6,11 +6,11 @@ from os import getenv
 """ BOT INITIALISATION """
 
 # Get API KEY
-token_id = './utilities/API_TOKEN.txt'
-with open(token_id, 'r') as file:
-    API_TOKEN = file.read()
+# token_id = './utilities/API_TOKEN.txt'
+# with open(token_id, 'r') as file:
+#     API_TOKEN = file.read()
 
-# API_TOKEN = getenv('TELEGRAM_API')
+API_TOKEN = getenv('TELEGRAM_API')
 
 bot = telebot.TeleBot(API_TOKEN)
 
@@ -37,14 +37,7 @@ def commands(message):
     command_list.append(telebot.formatting.hbold('!add <name>; <type>; <yyyy-mm-dd>\n') + 'Adds new event of particular type')
     command_list.append(telebot.formatting.hbold('!remove <eventID>\n') + 'Removes event of particular ID')
 
-
-    # command_text = "Here are my commands:"
-    # command_event = telebot.formatting.hbold('!events <type>\n') + 'Lists all events from now on (type optional)'
-    # command_add = telebot.formatting.hbold('!add <name>; <type>; <yyyy-mm-dd>\n') + 'Adds new event of particular type'
-    # command_remove = telebot.formatting.hbold('!remove <eventID>\n') + 'Removes event of particular ID'
-
     commands = "\n\n".join(command_list)
-    # commands = 'Here are my commands:\n\n' + command_event + '\n\n' + command_add + '\n\n' + command_remove
 
     bot.send_message(message.chat.id, commands, parse_mode='html')
     bot.send_message(message.chat.id, telebot.formatting.hbold('Current event types:\n') + '\n'.join(event_types), parse_mode='html')
@@ -56,7 +49,7 @@ def list_events(message):
     # extracts the argument from user input
     argument = message.text.split()[1:]
 
-    """ Extraction and filtering of events from Google API query """
+    #Extraction and filtering of events from Google API query
     # creates a list of dictionaries including all events in the calendar
     events = calendar_functions.list_events()
     if not events:
@@ -102,9 +95,12 @@ def list_events(message):
     else:
         bot.reply_to(message, 'Event type no available. Current types:\n\n' + '\n'.join(event_types))
 
-    """ Output of query results via TeleBot """
+    # Output of query results via TeleBot
     for event in filtered_events:
-        bot.send_message(message.chat.id, text = '\n'.join(event.values()), parse_mode='html')
+        if not event["date"]:
+            bot.send_message(message.chat.id, text = "Non all-day event detected: " + event["name"], parse_mode='html')
+        else:
+            bot.send_message(message.chat.id, text = '\n'.join(event.values()), parse_mode='html')
 
 
 """ !add: adds events into the connected calendar """

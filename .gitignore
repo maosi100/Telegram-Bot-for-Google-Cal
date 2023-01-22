@@ -2,3 +2,5 @@ __pycache__
 utilities
 *.pickle
 *.code-workspace
+.venv
+.DS_Store
