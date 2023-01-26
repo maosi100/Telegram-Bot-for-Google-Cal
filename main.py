@@ -54,6 +54,7 @@ def list_events(message):
     events = calendar_functions.list_events()
     if not events:
         bot.send_message(message.chat.id, 'No upcoming events found')
+        return
 
     # creates a sub-list of dictonaries including only the relevant information
     filtered_events = []
@@ -94,6 +95,7 @@ def list_events(message):
     # if an unknown argument was given
     else:
         bot.reply_to(message, 'Event type no available. Current types:\n\n' + '\n'.join(event_types))
+        return
 
     # Output of query results via TeleBot
     for event in filtered_events:
@@ -114,12 +116,15 @@ def add_event(message):
         event_date = message.text.split('; ')[2]
     except IndexError:
         bot.reply_to(message, text = 'Usage: !add <name>; <type>; <yyyy-mm-dd>')
+        return
 
     # Validation if events argument is included in types and date format is correct
     if event_type not in event_types:
         bot.reply_to(message, 'Event type no available. Current types:\n\n' + '\n'.join(event_types))
+        return
     elif not validate_date(event_date):
         bot.reply_to(message, 'Please enter date in format YYYY-MM-DD.')
+        return
     # Call the create event function after everything is valid and return the created event object
     else:
         event = calendar_functions.create_event(event_name, event_type, event_date)
@@ -134,11 +139,48 @@ def remove_event(message):
 
     if len(message.text.split()) != 2:
         bot.reply_to(message, "Usage: !remove <event id>")
+        return
     else:
         if not calendar_functions.delete_event(message.text.split()[1]):
             bot.reply_to(message, "Event id does not exist")
         else:
             bot.send_message(message.chat.id, "Event succesfully deleted.")
+
+
+""" !update: changes date of existing events """
+@bot.message_handler(regexp="!update")
+def update_event(message):
+
+    # Store arguments into variables and validate the date
+    try:
+        event_id = message.text.split('; ')[0][8:]
+        event_date = message.text.split('; ')[1]
+        
+        if not validate_date(event_date):
+            bot.reply_to(message, 'Please enter date in format YYYY-MM-DD.')
+            return
+        
+    except IndexError:
+        bot.reply_to(message, text = 'Usage: !update <event id>; <yyyy-mm-dd>')
+        return
+
+    # retrive current event information to include in update function
+    current_event = calendar_functions.get_event(event_id)
+    if not current_event:
+        bot.reply_to(message, "Event id does not exist")
+        return
+    else:
+        current_name = current_event["summary"]
+        current_category = current_event["description"]
+
+    # call update_event() to change the date and print new event data
+    event = calendar_functions.update_event(event_id, event_date, current_name, current_category)
+    if not event:
+        bot.reply_to(message, "Unknown Error occured")
+    else:
+        bot.send_message(message.chat.id, 
+                            text = 'Event succesfully updated:\n' + 
+                            '\n'.join(event.values()), parse_mode='html')
 
 
 """ Helper Functions """
@@ -152,5 +194,3 @@ def validate_date(date_text):
         return False
 
 bot.infinity_polling()
-
-# !modify <event id>; yyyy-mm-dd
