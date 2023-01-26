@@ -6,11 +6,11 @@ from os import getenv
 """ BOT INITIALISATION """
 
 # Get API KEY
-# token_id = './utilities/API_TOKEN.txt'
-# with open(token_id, 'r') as file:
-#     API_TOKEN = file.read()
+token_id = './utilities/API_TOKEN_old.txt'
+with open(token_id, 'r') as file:
+    API_TOKEN = file.read()
 
-API_TOKEN = getenv('TELEGRAM_API')
+# API_TOKEN = getenv('TELEGRAM_API')
 
 bot = telebot.TeleBot(API_TOKEN)
 
@@ -21,7 +21,7 @@ event_types = []
 with open ('./event_categories.txt') as file:
     for line in file.readlines():
         line_new = line.rstrip()
-        event_types.append(line_new)
+        event_types.append(line_new)    
 
  
 """ TELEGRAM BOT FUNCTIONALITIES """
@@ -106,14 +106,6 @@ def list_events(message):
 """ !add: adds events into the connected calendar """
 @bot.message_handler(regexp="!add")
 def add_event(message):
-
-    # Add a function to validate the correct date format in input
-    def validate_date(date_text):
-        try:
-            datetime.datetime.strptime(date_text, '%Y-%m-%d')
-            return True
-        except ValueError:
-            return False
     
     # Store arguments into variables
     try:
@@ -141,11 +133,24 @@ def add_event(message):
 def remove_event(message):
 
     if len(message.text.split()) != 2:
-        bot.reply_to(message, 'Usage: !remove <event id>')
+        bot.reply_to(message, "Usage: !remove <event id>")
     else:
         if not calendar_functions.delete_event(message.text.split()[1]):
-            bot.reply_to(message, 'Event id does not exist')
+            bot.reply_to(message, "Event id does not exist")
         else:
-            bot.send_message(message.chat.id, 'Event succesfully deleted.')
+            bot.send_message(message.chat.id, "Event succesfully deleted.")
+
+
+""" Helper Functions """
+
+# Add a function to validate the correct date format in input
+def validate_date(date_text):
+    try:
+        datetime.datetime.strptime(date_text, '%Y-%m-%d')
+        return True
+    except ValueError:
+        return False
 
 bot.infinity_polling()
+
+# !modify <event id>; yyyy-mm-dd
