@@ -46,6 +46,15 @@ def list_events():
     return events
 
 
+""" List one specific event """
+def get_event(event_id):
+    service = get_calendar_service()
+    now = datetime.datetime.utcnow().isoformat() + 'Z'
+    return service.events().get(
+        calendarId=CALENDAR_ID, eventId=event_id
+    ).execute()
+
+
 """ Creates an event in the CALENDAR_ID calender """
 def create_event(event_name, event_type, event_start):
  
@@ -91,29 +100,31 @@ def delete_event(event_id):
 
 
 """ Updates an event in the primary calender """
-""" Not for prototype functionality """
-# def update_event():
-#         # update the event to tomorrow 9 AM IST
-#         service = get_calendar_service()
+def update_event(event_id, event_start, event_name, event_type):
+        # update the event to tomorrow 9 AM IST
+        service = get_calendar_service()
 
-#         d = datetime.now().date()
-#         tomorrow = datetime(d.year, d.month, d.day, 9)+timedelta(days=1)
-#         start = tomorrow.isoformat()
-#         end = (tomorrow + timedelta(hours=2)).isoformat()
+        # Calculate the end time by converting into datetime object and back into str
+        start = datetime.datetime.strptime(event_start, '%Y-%m-%d').date()
+        end = start+timedelta(days=1)
+        event_end = end.isoformat()
 
-#         event_result = service.events().update(
-#           calendarId='primary',
-#           eventId='<place your event ID here>',
-#           body={
-#            "summary": 'Updated Automating calendar',
-#            "description": 'This is a tutorial example of automating google calendar with python, updated time.',
-#            "start": {"dateTime": start, "timeZone": 'Asia/Kolkata'},
-#            "end": {"dateTime": end, "timeZone": 'Asia/Kolkata'},
-#            },
-#         ).execute()
+        # Call the update function using the bot arguments and store the updated event object    
+        event_result = service.events().update(
+          calendarId=CALENDAR_ID,
+          eventId=event_id,
+          body={
+            "summary": event_name,
+            "description": event_type,
+            'start': {'date': event_start},
+            'end': {'date': event_end},
+           }
+        ).execute()
 
-#         print("updated event")
-#         print("id: ", event_result['id'])
-#         print("summary: ", event_result['summary'])
-#         print("starts at: ", event_result['start']['dateTime'])
-#         print("ends at: ", event_result['end']['dateTime'])
+        # Return relevant data from the stored event object to the bot
+        return {
+            'name': event_result['summary'],
+            'date': event_result['start']['date'],
+            'description': event_result['description'],
+            'id': event_result['id']
+        }
