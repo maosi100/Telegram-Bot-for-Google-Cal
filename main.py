@@ -6,11 +6,11 @@ from os import getenv
 """ BOT INITIALISATION """
 
 # Get API KEY
-token_id = './utilities/API_TOKEN_old.txt'
-with open(token_id, 'r') as file:
-    API_TOKEN = file.read()
+# token_id = './utilities/API_TOKEN_old.txt'
+# with open(token_id, 'r') as file:
+#     API_TOKEN = file.read()
 
-# API_TOKEN = getenv('TELEGRAM_API')
+API_TOKEN = getenv('TELEGRAM_API')
 
 bot = telebot.TeleBot(API_TOKEN)
 
@@ -36,6 +36,7 @@ def commands(message):
     command_list.append(telebot.formatting.hbold('!events <type>\n') + 'Lists all events from now on (type optional)')
     command_list.append(telebot.formatting.hbold('!add <name>; <type>; <yyyy-mm-dd>\n') + 'Adds new event of particular type')
     command_list.append(telebot.formatting.hbold('!remove <eventID>\n') + 'Removes event of particular ID')
+    command_list.append(telebot.formatting.hbold('!update <eventID>; <yyyy-mm-dd>\n') + 'Updates an event date')
 
     commands = "\n\n".join(command_list)
 
