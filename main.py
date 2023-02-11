@@ -7,11 +7,11 @@ from os import getenv
 
 # Don't forget to change for production
 # Get API KEY
-token_id = './utilities/API_TOKEN_old.txt'
-with open(token_id, 'r') as file:
-    API_TOKEN = file.read()
+#token_id = './utilities/API_TOKEN_old.txt'
+#with open(token_id, 'r') as file:
+#    API_TOKEN = file.read()
 
-# API_TOKEN = getenv('TELEGRAM_API')
+API_TOKEN = getenv('TELEGRAM_API')
 
 bot = telebot.TeleBot(API_TOKEN)
 
