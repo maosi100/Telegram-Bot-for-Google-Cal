@@ -5,12 +5,13 @@ from os import getenv
 
 """ BOT INITIALISATION """
 
+# Don't forget to change for production
 # Get API KEY
-# token_id = './utilities/API_TOKEN_old.txt'
-# with open(token_id, 'r') as file:
-#     API_TOKEN = file.read()
+token_id = './utilities/API_TOKEN_old.txt'
+with open(token_id, 'r') as file:
+    API_TOKEN = file.read()
 
-API_TOKEN = getenv('TELEGRAM_API')
+# API_TOKEN = getenv('TELEGRAM_API')
 
 bot = telebot.TeleBot(API_TOKEN)
 
@@ -97,13 +98,19 @@ def list_events(message):
     else:
         bot.reply_to(message, 'Event type no available. Current types:\n\n' + '\n'.join(event_types))
         return
-
+    
     # Output of query results via TeleBot
+    output_event = []
     for event in filtered_events:
-        if not event["date"]:
-            bot.send_message(message.chat.id, text = "Non all-day event detected: " + event["name"], parse_mode='html')
-        else:
-            bot.send_message(message.chat.id, text = '\n'.join(event.values()), parse_mode='html')
+        output_event.append('\n'.join(event.values()))
+    
+    output = '\n\n'.join(output_event)
+
+    # Send event message, unpin current pin and set message as new pinned message
+    sent_message = bot.send_message(message.chat.id, text = output, parse_mode='html')
+    bot.unpin_all_chat_messages(message.chat.id)
+    bot.pin_chat_message(message.chat.id, sent_message.message_id, True)
+    return
 
 
 """ !add: adds events into the connected calendar """
@@ -132,7 +139,7 @@ def add_event(message):
         bot.send_message(message.chat.id, 
         text = 'Event succesfully created:\n' + '\n'.join(event.values()), 
         parse_mode='html')
-
+        return
 
 """ !remove: removes events from the calender based on event id """
 @bot.message_handler(regexp="!remove")
@@ -144,8 +151,10 @@ def remove_event(message):
     else:
         if not calendar_functions.delete_event(message.text.split()[1]):
             bot.reply_to(message, "Event id does not exist")
+            return
         else:
             bot.send_message(message.chat.id, "Event succesfully deleted.")
+            return
 
 
 """ !update: changes date of existing events """
@@ -182,6 +191,7 @@ def update_event(message):
         bot.send_message(message.chat.id, 
                             text = 'Event succesfully updated:\n' + 
                             '\n'.join(event.values()), parse_mode='html')
+        return
 
 
 """ Helper Functions """
