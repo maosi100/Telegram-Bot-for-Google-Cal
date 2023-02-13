@@ -7,11 +7,11 @@ from os import getenv
 
 # Don't forget to change for production
 # Get API KEY
-#token_id = './utilities/API_TOKEN_old.txt'
-#with open(token_id, 'r') as file:
-#    API_TOKEN = file.read()
+token_id = './utilities/API_TOKEN_test.txt'
+with open(token_id, 'r') as file:
+    API_TOKEN = file.read()
 
-API_TOKEN = getenv('TELEGRAM_API')
+# API_TOKEN = getenv('TELEGRAM_API')
 
 bot = telebot.TeleBot(API_TOKEN)
 
@@ -69,7 +69,6 @@ def list_events(message):
                 temp_events = {
                     "name": telebot.formatting.hbold(event['summary']),
                     "date": event['start'].get('date'),
-                    "type": event['description'],
                     "id": event['id']
                 }
                 filtered_events.append(temp_events)
@@ -88,7 +87,6 @@ def list_events(message):
             temp_events = {
                 "name": telebot.formatting.hbold(event['summary']),
                 "date": event['start'].get('date'),
-                "type": event['description'],
                 "id": event['id']
             }
             if temp_events['type'] == argument[0].lower():
@@ -135,7 +133,8 @@ def add_event(message):
         return
     # Call the create event function after everything is valid and return the created event object
     else:
-        event = calendar_functions.create_event(event_name, event_type, event_date)
+        event_id = create_event_id(event_type, event_date, event_name).lower()
+        event = calendar_functions.create_event(event_name, event_type, event_date, event_id)
         bot.send_message(message.chat.id, 
         text = 'Event succesfully created:\n' + '\n'.join(event.values()), 
         parse_mode='html')
@@ -203,5 +202,9 @@ def validate_date(date_text):
         return True
     except ValueError:
         return False
+
+# Create an event ID
+def create_event_id(event_category, event_date, event_name):
+    return f"{event_category}{event_date.replace('-', '')[4:]}{event_name[0]}"
 
 bot.infinity_polling()

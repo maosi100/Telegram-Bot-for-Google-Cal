@@ -10,11 +10,11 @@ from cal_setup import get_calendar_service
 
 
 """ Setting up the calender id """
-cal_id = './utilities/calendar_id.txt'
-with open(cal_id, 'r') as file:
-    CALENDAR_ID = file.read()
+#cal_id = './utilities/calendar_id_test.txt'
+#with open(cal_id, 'r') as file:
+#    CALENDAR_ID = file.read()
 
-# CALENDAR_ID = getenv('CALENDARID')
+CALENDAR_ID = getenv('CALENDARID')
 
 """ Lists all currently connected celdendar with the associated account """
 def list_calendars():
@@ -56,7 +56,7 @@ def get_event(event_id):
 
 
 """ Creates an event in the CALENDAR_ID calender """
-def create_event(event_name, event_type, event_start):
+def create_event(event_name, event_type, event_start, event_id):
  
     service = get_calendar_service()
  
@@ -68,6 +68,7 @@ def create_event(event_name, event_type, event_start):
     # Call the insert function using the bot arguments and store the created event object    
     event_result = service.events().insert(calendarId=CALENDAR_ID,
         body={
+            "id": event_id,
             "summary": event_name,
             "description": event_type,
             "start": {"date": event_start},
@@ -79,7 +80,6 @@ def create_event(event_name, event_type, event_start):
     return {
         'name': event_result['summary'],
         'date': event_result['start']['date'],
-        'description': event_result['description'],
         'id': event_result['id']
     }
 
