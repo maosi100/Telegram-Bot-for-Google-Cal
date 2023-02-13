@@ -19,7 +19,7 @@ print("Starting bot...")
 
 """ VARIABLES """
 event_types = []
-with open ('./event_categories.txt') as file:
+with open ('./configuration/event_categories.txt') as file:
     for line in file.readlines():
         line_new = line.rstrip()
         event_types.append(line_new)    
