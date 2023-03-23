@@ -20,7 +20,7 @@ Gives an overview of available bot commands
 `!add <event name>; <event type>; YYYY-MM-DD`
 
 * Added events are whole-day events ranging from the start date to start date to start date +1 day
-* The event type is written into the Google Calendar Event description
+* The event type is written into the Google Calendar Event description as well as used to generate an event ID
 
 **Listing events**
 
@@ -30,11 +30,8 @@ The event type is an optional argument. If you exclude it, all events will be li
 ```
 Event Name
 Event Date
-Event Type
-Event ID
+Event ID incl. Type
 ```
-
-In Version 1.0 the returned event ID is not very communicate as it has to be copy and pasted to remove the event. This is a feature to be improved in the upcoming releases.
 
 **Removing an event**
 
