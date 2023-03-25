@@ -6,6 +6,13 @@ from os import getenv
 
 API_TOKEN = getenv('TELEGRAM_API')
 EVENT_TYPES = []
+COMMANDS = [
+        "<b>Here are my commands:</b>",
+        "<b>!events [type]</b>\n" + "Lists all events from now on (type optional)",
+        "<b>!add [name]; [type]; [yyyy-mm-dd]</b>\n" + "Adds new event of particular type",
+        "<b>!remove [eventID]</b>\n" + "Removes event of particular ID",
+        "<b>!update [eventID]; [yyyy-mm-dd]</b>\n" + "Updates an event date"
+        ]
 
 bot = telebot.TeleBot(API_TOKEN)
 print("Starting bot...")
@@ -13,20 +20,14 @@ print("Starting bot...")
 with open ('./utilities/event_categories.txt') as file:
     for line in file.readlines():
         EVENT_TYPES.append(line.rstrip())    
+event_types_string = "<b>Current event types:</b>\n" + '\n'.join(EVENT_TYPES)
 
- 
+
 @bot.message_handler(regexp="!help")
 def commands(message):
-    commands = [
-            "Here are my commands:",
-            telebot.formatting.hbold("!events <type>\n") + "Lists all events from now on (type optional)",
-            telebot.formatting.hbold('!add <name>; <type>; <yyyy-mm-dd>\n') + 'Adds new event of particular type',
-            telebot.formatting.hbold('!remove <eventID>\n') + 'Removes event of particular ID',
-            telebot.formatting.hbold('!update <eventID>; <yyyy-mm-dd>\n') + 'Updates an event date',
-            ]
 
-    bot.send_message(message.chat.id, "\n\n".join(commands), parse_mode='html')
-    bot.send_message(message.chat.id, telebot.formatting.hbold('Current event types:\n') + '\n'.join(EVENT_TYPES), parse_mode='html')
+    bot.send_message(message.chat.id, '\n\n'.join(COMMANDS), parse_mode='html')
+    bot.send_message(message.chat.id, event_types_string, parse_mode='html')
 
 
 @bot.message_handler(regexp="!events")
@@ -34,7 +35,7 @@ def list_events(message):
     events = calendar_functions.list_events()
 
     if not events:
-        bot.send_message(message.chat.id, 'No upcoming events found')
+        bot.send_message(message.chat.id, "No upcoming events found")
         return
 
     event_list = []
@@ -42,22 +43,29 @@ def list_events(message):
     try:
         argument = message.text.split()[1]
         if argument not in EVENT_TYPES:
-            bot.reply_to(message, 'Event type no available. Current types:\n\n' + '\n'.join(EVENT_TYPES))
+            bot.reply_to(message, "Event type not available." + event_types_string)
             return
         else:
             for event in events:
                 if argument in event['id']:
-                    event_list.append(
-                            '\n'.join([telebot.formatting.hbold(event['summary']), event['start'].get('date'), event['id']])
-                            )
+                    temporary_list = [
+                            f"<b>{event['summary']}</b>",
+                            event['start'].get('date'), 
+                            event['id']
+                            ]
+                    event_list.append('\n'.join(temporary_list))
 
     except IndexError:
         for event in events:
-            event_list.append(
-                    '\n'.join([telebot.formatting.hbold(event['summary']), event['start'].get('date'), event['id']])
-                    )
+                temporary_list = [
+                        f"<b>{event['summary']}</b>",
+                        event['start'].get('date'), 
+                        event['id']
+                        ]
+                event_list.append('\n'.join(temporary_list))
 
-    sent_message = bot.send_message(message.chat.id, '\n\n'.join(event_list), parse_mode='html')
+    sent_message = bot.send_message(
+            message.chat.id, '\n\n'.join(event_list), parse_mode='html')
     bot.unpin_all_chat_messages(message.chat.id)
     bot.pin_chat_message(message.chat.id, sent_message.message_id, True)
 
@@ -69,11 +77,11 @@ def add_event(message):
         event_type = message.text.split('; ')[1]
         event_date = message.text.split('; ')[2]
     except IndexError:
-        bot.reply_to(message, text = 'Usage: !add <name>; <type>; <yyyy-mm-dd>')
+        bot.reply_to(message, text = "Usage: !add <name>; <type>; <yyyy-mm-dd>")
         return
 
     if event_type not in EVENT_TYPES:
-        bot.reply_to(message, 'Event type no available. Current types:\n\n' + '\n'.join(EVENT_TYPES))
+        bot.reply_to(message, "Event type not available." + event_types_string)
         return
     elif not validate_date(event_date):
         bot.reply_to(message, 'Please enter date in format YYYY-MM-DD.')
