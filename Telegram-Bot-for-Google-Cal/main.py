@@ -25,7 +25,6 @@ event_types_string = "<b>Current event types:</b>\n" + '\n'.join(EVENT_TYPES)
 
 @bot.message_handler(regexp="!help")
 def commands(message):
-
     bot.send_message(message.chat.id, '\n\n'.join(COMMANDS), parse_mode='html')
     bot.send_message(message.chat.id, event_types_string, parse_mode='html')
 
