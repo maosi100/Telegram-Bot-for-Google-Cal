@@ -1,7 +1,8 @@
-import telebot
-import calendar_functions
 import datetime
 from os import getenv
+
+import telebot
+import calendar_functions
 
 
 API_TOKEN = getenv('TELEGRAM_API')
@@ -64,7 +65,8 @@ def list_events(message):
                 event_list.append('\n'.join(temporary_list))
 
     sent_message = bot.send_message(
-            message.chat.id, '\n\n'.join(event_list), parse_mode='html')
+            message.chat.id, '\n\n'.join(event_list), parse_mode='html'
+    )
     bot.unpin_all_chat_messages(message.chat.id)
     bot.pin_chat_message(message.chat.id, sent_message.message_id, True)
 
@@ -88,9 +90,11 @@ def add_event(message):
     else:
         event_id = create_event_id(event_type, event_date)
         event = calendar_functions.create_event(event_name, event_type, event_date, event_id)
-        bot.send_message(message.chat.id, 
-                         text = 'Event succesfully created:\n' + '\n'.join(event.values()), 
-                         parse_mode='html')
+        bot.send_message(
+            message.chat.id, 
+            text = 'Event succesfully created:\n' + '\n'.join(event.values()), 
+            parse_mode='html'
+        )
         return
 
 
